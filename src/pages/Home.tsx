@@ -12,7 +12,7 @@ const ESTOIC_QUOTES = [
 ];
 
 export const Home: React.FC = () => {
-  const { orders, products } = useApp();
+  const { orders } = useApp();
   const today = new Date().toISOString().split('T')[0];
   const todaysOrders = orders.filter(o => (o.date === today || !o.date));
   const deliveredCount = todaysOrders.filter(o => o.status === 'entregue').length;
