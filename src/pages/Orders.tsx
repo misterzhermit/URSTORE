@@ -3,7 +3,7 @@ import { useApp } from '../context/useApp';
 import { Modal } from '../components/ui/Modal';
 import { ReceiptComponent } from '../components/ui/ReceiptComponent';
 import { useReceiptGenerator } from '../hooks/useReceiptGenerator';
-import { Truck, CheckCircle, Clock, DollarSign, Share2, Pencil, Plus, Trash2, RotateCcw, FileText, Loader2, Eye, ExternalLink, Search, Filter, Users, Box, ChevronDown, ChevronRight, Check } from 'lucide-react';
+import { Truck, CheckCircle, Clock, DollarSign, Share2, Pencil, Plus, Trash2, RotateCcw, FileText, Loader2, Eye, Search, Users, Box, ChevronDown, ChevronRight, Check } from 'lucide-react';
 import { cn } from '../lib/utils';
 import type { Order, OrderItem, OrderStatus } from '../types';
 

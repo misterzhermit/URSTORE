@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp, Quote, Award, Sparkles } from 'lucide-react';
+import { Quote, Award } from 'lucide-react';
 import { useApp } from '../context/useApp';
 
 const ESTOIC_QUOTES = [

@@ -1,7 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/useApp';
-import { Store, Building2, MapPin, Tag, LogOut, ChevronRight, ShieldCheck, Database } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Store, Building2, MapPin, LogOut, ChevronRight, ShieldCheck, Database } from 'lucide-react';
 
 export const Settings: React.FC = () => {
   const { company, products, orders, logout } = useApp();

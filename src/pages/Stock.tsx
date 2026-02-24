@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/useApp';
 import { cn } from '../lib/utils';
-import { ChevronDown, Pencil, Check, X } from 'lucide-react';
+import { ChevronDown, Pencil, Check } from 'lucide-react';
 
 export const Stock: React.FC = () => {
   const { products, updateProduct } = useApp();

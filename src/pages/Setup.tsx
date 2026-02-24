@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/useApp';
-import { Plus, ArrowRight, Store, Search, ChevronDown, Check, Building2, MapPin } from 'lucide-react';
+import { Plus, ArrowRight, Store, Search, Check, Building2, MapPin } from 'lucide-react';
 import { ACTIVITY_SECTORS, getSuggestionsForSector, type NCMSuggestion } from '../lib/taxService';
 import { cn } from '../lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 export const Setup: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
   const { setCompany, addProduct, products } = useApp();

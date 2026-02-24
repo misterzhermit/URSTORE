@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, DollarSign, Truck, Wallet, TrendingUp, AlertCircle } from 'lucide-react';
+import { ChevronDown, Truck, Wallet, TrendingUp, AlertCircle } from 'lucide-react';
 import { useApp } from '../../context/useApp';
 import { cn } from '../../lib/utils';
 

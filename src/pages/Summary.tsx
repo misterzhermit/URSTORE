@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/useApp';
-import { TrendingUp, TrendingDown, DollarSign, AlertCircle, Moon } from 'lucide-react';
+import { TrendingUp, DollarSign, AlertCircle, Moon } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 export const Summary: React.FC = () => {
