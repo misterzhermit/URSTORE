@@ -16,15 +16,25 @@ export const Summary: React.FC = () => {
   const revenue = todaysOrders.reduce((acc, o) => acc + o.total, 0);
 
   // 2. COGS (Custo das Mercadorias Vendidas)
-  let cogs = 0;
-  todaysOrders.forEach(order => {
-    order.items.forEach(item => {
-      const product = products.find(p => p.id === item.productId);
-      if (product) {
-        cogs += (product.costPrice * item.quantity);
-      }
-    });
-  });
+  const productPerformance = products.map(product => {
+    const productOrders = todaysOrders.flatMap(o => o.items).filter(item => item.productId === product.id);
+    const totalSold = productOrders.reduce((acc, item) => acc + item.quantity, 0);
+    const totalRevenue = productOrders.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    const totalCost = totalSold * product.costPrice;
+    
+    return {
+      id: product.id,
+      name: product.name,
+      emoji: product.emoji,
+      totalSold,
+      totalRevenue,
+      totalCost,
+      margin: totalRevenue > 0 ? ((totalRevenue - totalCost) / totalRevenue) * 100 : 0
+    };
+  }).filter(p => p.totalSold > 0);
+
+  const cogs = productPerformance.reduce((acc, p) => acc + p.totalCost, 0);
+  const averageMargin = revenue > 0 ? ((revenue - cogs) / revenue) * 100 : 0;
 
   // 3. Expenses (Despesas do dia)
   const todaysExpenses = expenses.filter(e => e.date === today);
@@ -80,8 +90,14 @@ export const Summary: React.FC = () => {
               <h2 className="text-xl font-black text-white leading-none">R$ {profit.toFixed(2)}</h2>
             </div>
           </div>
-          <div className="absolute -right-2 -bottom-2 opacity-[0.03] group-hover:opacity-10 transition-opacity">
-            <DollarSign size={64} />
+          <div className="flex flex-col items-end z-10">
+            <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest leading-none mb-1">Margem</p>
+            <span className={cn(
+              "text-xs font-black px-2 py-1 rounded-md",
+              averageMargin > 30 ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400"
+            )}>
+              {averageMargin.toFixed(1)}%
+            </span>
           </div>
         </div>
 
@@ -104,18 +120,36 @@ export const Summary: React.FC = () => {
 
       <div className="mt-4 px-1">
         <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-500 border-b border-white/5 pb-2 mb-2">
-          <span>Detalhamento Diário</span>
-          <span className="text-slate-400">Valores Reais</span>
+          <span>CMV & Margem por Produto</span>
+          <span className="text-slate-400">Desempenho Real</span>
         </div>
-        <div className="grid grid-cols-2 gap-2">
-          <div className="bg-white/5 rounded-lg p-2 border border-white/5 flex justify-between items-center">
-            <span className="text-[10px] text-slate-400 uppercase font-bold">Mercadorias</span>
-            <span className="text-xs font-black text-white">R$ {cogs.toFixed(2)}</span>
-          </div>
-          <div className="bg-white/5 rounded-lg p-2 border border-white/5 flex justify-between items-center">
-            <span className="text-[10px] text-slate-400 uppercase font-bold">Despesas Extras</span>
-            <span className="text-xs font-black text-white">R$ {totalExpenses.toFixed(2)}</span>
-          </div>
+        <div className="space-y-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+          {productPerformance.map(p => (
+            <div key={p.id} className="bg-white/[0.02] border border-white/5 rounded-xl p-3 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <span className="text-xl">{p.emoji}</span>
+                <div>
+                  <h4 className="text-xs font-bold text-white leading-none">{p.name}</h4>
+                  <p className="text-[9px] text-slate-500 font-mono mt-1">Vendido: {p.totalSold} cx</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="flex items-center gap-2 justify-end">
+                  <span className="text-[9px] text-slate-500 uppercase font-black">Margem:</span>
+                  <span className={cn(
+                    "text-[10px] font-black",
+                    p.margin > 30 ? "text-emerald-400" : "text-amber-400"
+                  )}>
+                    {p.margin.toFixed(1)}%
+                  </span>
+                </div>
+                <p className="text-[10px] font-black text-white mt-0.5">CMV: R$ {p.totalCost.toFixed(2)}</p>
+              </div>
+            </div>
+          ))}
+          {productPerformance.length === 0 && (
+            <p className="text-center py-4 text-xs text-slate-600 italic">Nenhuma venda registrada hoje.</p>
+          )}
         </div>
       </div>
 

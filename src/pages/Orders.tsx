@@ -41,6 +41,7 @@ export const Orders: React.FC = () => {
   const [newOrderItems, setNewOrderItems] = useState<OrderItem[]>([]);
   const [selectedProductId, setSelectedProductId] = useState('');
   const [quantity, setQuantity] = useState('1');
+  const [salePrice, setSalePrice] = useState('');
 
   // Separation Mode State
   const [isSeparating, setIsSeparating] = useState(false);
@@ -61,6 +62,14 @@ export const Orders: React.FC = () => {
       originalQuantity: item.originalQuantity || item.quantity,
       collected: item.collected || false
     })));
+  };
+
+  const handleProductSelect = (id: string) => {
+    setSelectedProductId(id);
+    const product = products.find(p => p.id === id);
+    if (product) {
+      setSalePrice(product.defaultPrice.toString());
+    }
   };
 
   const toggleItemCollected = (index: number) => {
@@ -187,28 +196,30 @@ export const Orders: React.FC = () => {
   };
 
   const handleAddItem = () => {
-    if (!selectedProductId || !quantity) return;
+    if (!selectedProductId || !quantity || !salePrice) return;
     
     const product = products.find(p => p.id === selectedProductId);
     if (!product) return;
 
-    const qty = parseInt(quantity);
-    if (qty <= 0) return;
+    const qty = parseFloat(quantity);
+    const price = parseFloat(salePrice);
+    if (isNaN(qty) || qty <= 0 || isNaN(price)) return;
 
     setNewOrderItems(prev => {
       const existing = prev.find(item => item.productId === selectedProductId);
       if (existing) {
         return prev.map(item => 
           item.productId === selectedProductId 
-            ? { ...item, quantity: item.quantity + qty }
+            ? { ...item, quantity: item.quantity + qty, priceAtOrder: price }
             : item
         );
       }
-      return [...prev, { productId: selectedProductId, quantity: qty, priceAtOrder: product.defaultPrice }];
+      return [...prev, { productId: selectedProductId, quantity: qty, priceAtOrder: price }];
     });
     
     setSelectedProductId('');
     setQuantity('1');
+    setSalePrice('');
   };
 
   const handleRemoveItem = (productId: string) => {
@@ -685,28 +696,56 @@ export const Orders: React.FC = () => {
             <div className="flex gap-2 mb-2">
               <select 
                 value={selectedProductId}
-                onChange={e => setSelectedProductId(e.target.value)}
+                onChange={e => handleProductSelect(e.target.value)}
                 className="flex-1 bg-slate-900 border border-slate-700 rounded-lg p-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               >
-                <option value="">Selecione...</option>
+                <option value="">Selecione um produto</option>
                 {products.map(p => (
                   <option key={p.id} value={p.id}>{p.emoji} {p.name}</option>
                 ))}
               </select>
-              <input 
-                type="number"
-                min="1"
-                value={quantity}
-                onChange={e => setQuantity(e.target.value)}
-                className="w-16 bg-slate-900 border border-slate-700 rounded-lg p-2 text-white text-sm text-center focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              />
+              <div className="relative w-20">
+                <input 
+                  type="text"
+                  inputMode="decimal"
+                  value={quantity}
+                  onChange={e => setQuantity(e.target.value.replace(/[^0-9.,]/g, ''))}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white text-center text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
             </div>
+
+            {selectedProductId && (
+              <div className="mb-3 animate-in fade-in slide-in-from-top-1">
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Preço de Venda</label>
+                  {products.find(p => p.id === selectedProductId) && (
+                    <span className="text-[10px] text-emerald-500/80 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                      Recomendado: R$ {products.find(p => p.id === selectedProductId)?.defaultPrice.toFixed(2)}
+                    </span>
+                  )}
+                </div>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-sm">R$</span>
+                  <input 
+                    type="text"
+                    inputMode="decimal"
+                    value={salePrice}
+                    onChange={e => setSalePrice(e.target.value.replace(/[^0-9.,]/g, ''))}
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 pl-9 pr-3 text-white font-bold text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    placeholder="0,00"
+                  />
+                </div>
+              </div>
+            )}
+
             <button 
               onClick={handleAddItem}
-              disabled={!selectedProductId}
-              className="w-full bg-slate-700 hover:bg-slate-600 text-white py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+              disabled={!selectedProductId || !quantity || !salePrice}
+              className="w-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 py-2.5 rounded-lg text-sm font-black uppercase tracking-wider hover:bg-emerald-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Adicionar Item
+              <Plus size={16} />
+              Adicionar ao Pedido
             </button>
           </div>
 

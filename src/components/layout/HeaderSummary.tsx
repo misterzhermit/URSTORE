@@ -37,8 +37,8 @@ export const HeaderSummary: React.FC<HeaderSummaryProps> = ({ onProfileClick, is
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 px-4 pt-2 pb-1 bg-[#0b0f14]/80 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-md mx-auto flex justify-between items-center relative">
+      <header className="fixed top-0 left-0 right-0 z-50 px-4 pt-[env(safe-area-inset-top,8px)] pb-1 bg-[#0b0f14]/80 backdrop-blur-md border-b border-white/5">
+        <div className="max-w-md mx-auto flex justify-between items-center relative h-14">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center font-bold text-slate-900">
               {company?.name?.[0] || 'N'}
@@ -88,7 +88,7 @@ export const HeaderSummary: React.FC<HeaderSummaryProps> = ({ onProfileClick, is
               animate={{ y: 0 }}
               exit={{ y: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 left-0 right-0 z-[52] bg-white/[0.03] backdrop-blur-2xl border-b border-white/10 rounded-b-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] pt-14 pb-8 px-6"
+              className="fixed top-0 left-0 right-0 z-[52] bg-white/[0.03] backdrop-blur-2xl border-b border-white/10 rounded-b-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] pt-[calc(env(safe-area-inset-top,8px)+56px)] pb-8 px-6"
             >
               <div className="max-w-md mx-auto space-y-6">
                 <div className="flex justify-between items-center mb-2">

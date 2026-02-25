@@ -6,12 +6,28 @@ import { cn } from '../lib/utils';
 import { motion } from 'framer-motion';
 
 export const Setup: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
-  const { setCompany, addProduct, products } = useApp();
+  const { company, setCompany, addProduct, products } = useApp();
   const [step, setStep] = useState(1);
-  const [name, setName] = useState('');
-  const [cnpj, setCnpj] = useState('');
-  const [city, setCity] = useState('');
-  const [activitySector, setActivitySector] = useState<string>(ACTIVITY_SECTORS[0]);
+  const [name, setName] = useState(company?.name === 'Minha Empresa' ? '' : (company?.name || ''));
+  const [cnpj, setCnpj] = useState(company?.cnpj || '');
+  const [city, setCity] = useState(company?.address || '');
+  const [activitySector, setActivitySector] = useState<string>(company?.activitySector || ACTIVITY_SECTORS[0]);
+  
+  // Sincronizar se o company mudar (ex: carregamento inicial demorado)
+  useEffect(() => {
+    if (company && (!name || company.name === 'Minha Empresa')) {
+      const updateData = () => {
+        if (company.name !== 'Minha Empresa') {
+          setName(company.name);
+        }
+        setCnpj(company.cnpj || '');
+        setCity(company.address || '');
+        setActivitySector(company.activitySector || ACTIVITY_SECTORS[0]);
+      };
+      // Usar requestAnimationFrame para evitar o erro de setState síncrono no efeito
+      requestAnimationFrame(updateData);
+    }
+  }, [company, name]);
   
   const [prodName, setProdName] = useState('');
   const [prodEmoji, setProdEmoji] = useState('📦');
@@ -19,21 +35,21 @@ export const Setup: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
   const [prodNcm, setProdNcm] = useState('');
   
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [filteredSuggestions, setFilteredSuggestions] = useState<NCMSuggestion[]>([]);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (prodName.length > 1 && !showSuggestions) {
+  const filteredSuggestions = React.useMemo(() => {
+    if (prodName.length > 1) {
       const allSuggestions = getSuggestionsForSector(activitySector);
-      const filtered = allSuggestions.filter(s => 
+      return allSuggestions.filter(s => 
         s.name.toLowerCase().includes(prodName.toLowerCase())
       );
-      setFilteredSuggestions(filtered);
-      if (filtered.length > 0) setShowSuggestions(true);
-    } else if (prodName.length <= 1) {
-      setShowSuggestions(false);
     }
+    return [];
   }, [prodName, activitySector]);
+
+  useEffect(() => {
+    setShowSuggestions(filteredSuggestions.length > 0);
+  }, [filteredSuggestions]);
 
   // Fechar sugestões ao clicar fora
   useEffect(() => {
@@ -53,15 +69,20 @@ export const Setup: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
     setShowSuggestions(false);
   };
 
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     if (step === 1 && name.trim()) {
-      setCompany({ 
-        name, 
-        activitySector,
-        cnpj: cnpj || undefined,
-        address: city || undefined
-      });
-      setStep(2);
+      try {
+        await setCompany({ 
+          name, 
+          activitySector,
+          cnpj: cnpj || undefined,
+          address: city || undefined
+        });
+        setStep(2);
+      } catch (error) {
+        console.error('Erro ao salvar empresa:', error);
+        alert('Erro ao salvar os dados da empresa. Tente novamente.');
+      }
     } else if (step === 2) {
       onComplete();
     }

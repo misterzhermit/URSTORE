@@ -95,6 +95,7 @@ export interface AppContextType {
   divergenceLogs: DivergenceLog[];
   expenses: Expense[];
   addExpense: (expense: Expense) => void;
+  removeExpense: (id: string) => void;
   dailyHistory: DailyHistory[];
   closeDay: () => void;
 }

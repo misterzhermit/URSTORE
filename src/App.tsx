@@ -13,6 +13,7 @@ import { Balance } from './pages/Balance';
 import { Setup } from './pages/Setup';
 import { Settings } from './pages/Settings';
 import { Login } from './pages/Login';
+import { OfflineMonitor } from './components/ui/OfflineMonitor';
 
 const MainApp: React.FC = () => {
   const { company, isLoaded, isAuthenticated } = useApp();
@@ -32,13 +33,16 @@ const MainApp: React.FC = () => {
     return <Login />;
   }
 
-  if (showSetup || !company?.name) {
-     return <Setup onComplete={() => setShowSetup(false)} />;
+  if (showSetup || !company?.name || company?.name === 'Minha Empresa') {
+     return <Setup onComplete={() => {
+       setShowSetup(false);
+       setActiveTab(1); // Ir para a lista de coleta após o setup
+     }} />;
   }
 
   // Render content based on activeTab
   const renderContent = () => {
-    if (showSettings) return <Settings />;
+    if (showSettings) return <Settings onEditCompany={() => setShowSetup(true)} />;
     
     switch (activeTab) {
       case 0: return <Home />;
@@ -53,12 +57,13 @@ const MainApp: React.FC = () => {
 
   return (
     <Layout>
+       <OfflineMonitor />
        <HeaderSummary 
          onProfileClick={() => setShowSettings(!showSettings)} 
          isSettingsActive={showSettings}
        />
 
-       <main className="flex-1 mt-14">
+       <main className="flex-1 mt-[calc(env(safe-area-inset-top,8px)+56px)]">
          {renderContent()}
        </main>
 

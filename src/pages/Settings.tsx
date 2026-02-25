@@ -1,8 +1,12 @@
 import React from 'react';
 import { useApp } from '../context/useApp';
-import { Store, Building2, MapPin, LogOut, ChevronRight, ShieldCheck, Database } from 'lucide-react';
+import { Store, Building2, MapPin, LogOut, ChevronRight, ShieldCheck, Database, Edit3 } from 'lucide-react';
 
-export const Settings: React.FC = () => {
+interface SettingsProps {
+  onEditCompany?: () => void;
+}
+
+export const Settings: React.FC<SettingsProps> = ({ onEditCompany }) => {
   const { company, products, orders, logout } = useApp();
 
   const handleLogout = () => {
@@ -11,8 +15,9 @@ export const Settings: React.FC = () => {
     }
   };
 
-  const handleReset = () => {
-    if (confirm('ATENÇÃO: Isso apagará TODOS os dados do aplicativo permanentemente. Deseja continuar?')) {
+  const handleReset = async () => {
+    if (confirm('ATENÇÃO: Isso apagará TODOS os dados locais e encerrará sua sessão. Deseja continuar?')) {
+      await logout();
       localStorage.clear();
       window.location.reload();
     }
@@ -29,7 +34,18 @@ export const Settings: React.FC = () => {
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] px-2">Informações do Negócio</h2>
+        <div className="flex items-center justify-between px-2">
+          <h2 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Informações do Negócio</h2>
+          {onEditCompany && (
+            <button 
+              onClick={onEditCompany}
+              className="flex items-center gap-1 text-[10px] font-black text-emerald-500 uppercase tracking-widest hover:text-emerald-400 transition-colors"
+            >
+              <Edit3 size={12} />
+              Editar
+            </button>
+          )}
+        </div>
         <div className="bg-white/[0.03] border border-white/5 rounded-[2rem] overflow-hidden backdrop-blur-xl">
           <div className="p-4 flex items-center gap-4 border-b border-white/5">
             <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400">
