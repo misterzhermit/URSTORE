@@ -75,6 +75,15 @@ export interface DailyHistory {
   ordersCount: number;
 }
 
+export interface Loss {
+  id: string;
+  productId: string;
+  quantity: number;
+  reason: 'estragado' | 'sobra' | 'outro';
+  date: string; // ISO Date
+  costPrice: number;
+}
+
 export interface AppContextType {
   isLoaded: boolean;
   isAuthenticated: boolean;
@@ -96,6 +105,8 @@ export interface AppContextType {
   expenses: Expense[];
   addExpense: (expense: Expense) => void;
   removeExpense: (id: string) => void;
+  losses: Loss[];
+  addLoss: (loss: Loss) => void;
   dailyHistory: DailyHistory[];
   closeDay: () => void;
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Quote, Award } from 'lucide-react';
+import { Quote, Award, BookOpen } from 'lucide-react';
 import { useApp } from '../context/useApp';
 
 const ESTOIC_QUOTES = [
@@ -11,7 +11,7 @@ const ESTOIC_QUOTES = [
   "Não é o que acontece com você, mas como você reage que importa."
 ];
 
-export const Home: React.FC = () => {
+export const Home: React.FC<{ onOpenCatalog?: () => void }> = ({ onOpenCatalog }) => {
   const { orders } = useApp();
   const today = new Date().toISOString().split('T')[0];
   const todaysOrders = orders.filter(o => (o.date === today || !o.date));
@@ -72,6 +72,20 @@ export const Home: React.FC = () => {
           </motion.div>
         </div>
       </div>
+
+      {/* Catalog Quick Action */}
+      <button 
+        onClick={onOpenCatalog}
+        className="flex items-center gap-3 px-8 py-4 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded-2xl border border-emerald-500/20 transition-all active:scale-95 shadow-lg shadow-emerald-500/5 group"
+      >
+        <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+          <BookOpen size={20} />
+        </div>
+        <div className="text-left">
+          <span className="text-[10px] font-black uppercase tracking-widest block opacity-60">Vendas B2B</span>
+          <span className="text-sm font-black uppercase tracking-tighter">Abrir Catálogo</span>
+        </div>
+      </button>
 
       {/* Stoic Quote Widget */}
       <motion.div 

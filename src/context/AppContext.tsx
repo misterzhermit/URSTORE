@@ -1,5 +1,5 @@
 import React, { useState, useEffect, type ReactNode } from 'react';
-import type { Company, Product, Order, CollectionItem, Expense, DailyHistory, DivergenceLog } from '../types';
+import type { Company, Product, Order, CollectionItem, Expense, DailyHistory, DivergenceLog, Loss } from '../types';
 import { AppContext } from './useApp';
 import { supabase } from '../lib/supabase';
 import { haptics } from '../lib/haptics';
@@ -14,6 +14,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [collectionList, setCollectionList] = useState<CollectionItem[]>([]);
   const [divergenceLogs, setDivergenceLogs] = useState<DivergenceLog[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [losses, setLosses] = useState<Loss[]>([]);
   const [dailyHistory, setDailyHistory] = useState<DailyHistory[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -119,6 +120,21 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         description: e.description,
         amount: Number(e.amount),
         date: e.expense_date
+      })));
+
+      // Perdas
+      const { data: lossesData } = await supabase
+        .from('losses')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      if (lossesData) setLosses(lossesData.map(l => ({
+        id: l.id,
+        productId: l.product_id,
+        quantity: Number(l.quantity),
+        reason: l.reason,
+        date: l.loss_date,
+        costPrice: Number(l.cost_price)
       })));
 
       // Histórico Diário
@@ -569,6 +585,55 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     else setExpenses(prev => prev.filter(e => e.id !== id));
   };
 
+  const addLoss = async (loss: Loss) => {
+    if (!user) return;
+    
+    // 1. Inserir no Supabase
+    const { data, error } = await supabase
+      .from('losses')
+      .insert([{
+        user_id: user.id,
+        product_id: loss.productId,
+        quantity: loss.quantity,
+        reason: loss.reason,
+        loss_date: loss.date,
+        cost_price: loss.costPrice
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Erro ao adicionar perda:', error);
+      return;
+    }
+
+    // 2. Atualizar Estoque do Produto
+    const product = products.find(p => p.id === loss.productId);
+    if (product) {
+      await updateProduct(product.id, {
+        totalStock: Math.max(0, product.totalStock - loss.quantity),
+        availableStock: Math.max(0, product.availableStock - loss.quantity)
+      });
+
+      // 3. Adicionar como despesa para refletir no lucro real
+      await addExpense({
+        id: crypto.randomUUID(),
+        description: `Perda (${loss.reason}): ${product.name} (${loss.quantity} cx)`,
+        amount: loss.quantity * loss.costPrice,
+        date: loss.date
+      });
+    }
+
+    if (data) setLosses(prev => [{
+      id: data.id,
+      productId: data.product_id,
+      quantity: Number(data.quantity),
+      reason: data.reason,
+      date: data.loss_date,
+      costPrice: Number(data.cost_price)
+    }, ...prev]);
+  };
+
   const closeDay = async () => {
     if (!user) return;
     const today = new Date().toISOString().split('T')[0];
@@ -681,6 +746,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       expenses,
       addExpense,
       removeExpense,
+      losses,
+      addLoss,
       dailyHistory,
       closeDay,
       isAuthenticated,

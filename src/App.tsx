@@ -13,6 +13,7 @@ import { Balance } from './pages/Balance';
 import { Setup } from './pages/Setup';
 import { Settings } from './pages/Settings';
 import { Login } from './pages/Login';
+import { Catalog } from './pages/Catalog';
 import { OfflineMonitor } from './components/ui/OfflineMonitor';
 
 const MainApp: React.FC = () => {
@@ -20,6 +21,7 @@ const MainApp: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0); // Default to Home (Aba 0)
   const [showSetup, setShowSetup] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showCatalog, setShowCatalog] = useState(false);
 
   if (!isLoaded) {
     return (
@@ -43,9 +45,10 @@ const MainApp: React.FC = () => {
   // Render content based on activeTab
   const renderContent = () => {
     if (showSettings) return <Settings onEditCompany={() => setShowSetup(true)} />;
+    if (showCatalog) return <Catalog onBack={() => setShowCatalog(false)} />;
     
     switch (activeTab) {
-      case 0: return <Home />;
+      case 0: return <Home onOpenCatalog={() => setShowCatalog(true)} />;
       case 1: return <List />;
       case 2: return <Stock />;
       case 3: return <Orders />;
