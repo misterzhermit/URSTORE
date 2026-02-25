@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/useApp';
-import { Share2, MessageCircle, ArrowLeft, Search, Package, ShoppingCart } from 'lucide-react';
+import { Share2, MessageCircle, ArrowLeft, Search, Package } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 export const Catalog: React.FC<{ onBack?: () => void }> = ({ onBack }) => {

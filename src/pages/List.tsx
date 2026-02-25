@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/useApp';
-import { Check, Clock, RotateCcw, X, Plus, Trash2, ShoppingCart, List as ListIcon, Search } from 'lucide-react';
+import { Check, Clock, RotateCcw, X, Plus, Trash2, ShoppingCart, List as ListIcon } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { motion, type PanInfo, useMotionValue, useTransform, AnimatePresence } from 'framer-motion';
 import type { CollectionItem, Product } from '../types';

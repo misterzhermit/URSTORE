@@ -19,7 +19,7 @@ export const Summary: React.FC = () => {
   const productPerformance = products.map(product => {
     const productOrders = todaysOrders.flatMap(o => o.items).filter(item => item.productId === product.id);
     const totalSold = productOrders.reduce((acc, item) => acc + item.quantity, 0);
-    const totalRevenue = productOrders.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    const totalRevenue = productOrders.reduce((acc, item) => acc + (item.priceAtOrder * item.quantity), 0);
     const totalCost = totalSold * product.costPrice;
     
     return {

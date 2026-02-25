@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/useApp';
-import { Wallet, TrendingDown, DollarSign, Plus, Check, User, BarChart3, Trash2, Package } from 'lucide-react';
+import { Wallet, TrendingDown, DollarSign, Plus, Check, User, BarChart3, Trash2 } from 'lucide-react';
 import { Modal } from '../components/ui/Modal';
 
 export const Balance: React.FC = () => {

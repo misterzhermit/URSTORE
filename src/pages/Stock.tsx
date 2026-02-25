@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/useApp';
 import { cn } from '../lib/utils';
-import { ChevronDown, Pencil, Check, Plus, ShoppingBag, X, Trash2, ClipboardCheck } from 'lucide-react';
+import { ChevronDown, Pencil, Check, Plus, ShoppingBag, Trash2, ClipboardCheck } from 'lucide-react';
 import { Modal } from '../components/ui/Modal';
 
 export const Stock: React.FC = () => {
